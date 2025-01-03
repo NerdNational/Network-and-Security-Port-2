@@ -61,57 +61,65 @@ The network diagram illustrates the topology:
    sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
    sudo iptables -A POSTROUTING -t nat -j MASQUERADE
 
-4.2. Subnet 01 (Ubuntu Desktop)
-Configured Static IP Address:
-bash
-Copy code
-sudo nano /etc/netplan/01-netcfg.yaml
-Example configuration:
-yaml
-Copy code
+# Lab Report: Network Configuration and Troubleshooting
+
+## Introduction
+
+This lab report details the process of configuring static IP addresses for two subnets within a virtual network environment. The lab involved deploying a pre-configured web server from Bitnami and establishing communication between the subnets.
+
+## Subnet Configuration
+
+### 4.2. Subnet 01 (Ubuntu Desktop)
+
+1. **Configured Static IP Address:**
+    * Used `sudo nano /etc/netplan/01-netcfg.yaml` to edit the network configuration file.
+    * Implemented the following configuration (replace with your specific IP address and gateway):
+
+```yaml
 network:
   version: 2
   renderer: networkd
   ethernets:
     enp0s3:
       addresses:
-        - 192.168.25.10/24
-      gateway4: 192.168.25.1
+        - 192.168.25.10/24  # Replace with your desired IP address
+      gateway4: 192.168.25.1   # Replace with your gateway IP address
       nameservers:
         addresses: [8.8.8.8, 8.8.4.4]
 4.3. Subnet 02 (Web Server)
 Deployed Bitnami Web Server:
-Downloaded a preconfigured VM from Bitnami.
-Configured static IP for Subnet 02.
-Challenges:
-Routing Configuration: Troubleshooting connectivity between Subnet 01 and Subnet 02.
-Firewall Rules: Allowing traffic while maintaining security.
-5. Testing and Results
+Downloaded and deployed a pre-configured virtual machine from Bitnami for the web server.
+Configured Static IP Address:
+Assigned a static IP address within Subnet 02 (e.g., 192.168.125.10) to the web server.
+Challenges
+4.3.1. Routing Configuration
+Issue: Establishing communication between devices on Subnet 01 and Subnet 02.
+Resolution: Configured routing rules (e.g., using iptables) to direct traffic between the subnets.
+4.3.2. Firewall Rules
+Issue: Balancing security and allowing necessary traffic through the firewall.
+Resolution: Implemented firewall rules (e.g., using ufw) to allow traffic while maintaining security.
+Testing and Results
 5.1. Connectivity Testing
 Ping Tests:
-
-Ubuntu Desktop ↔ Gateway Router: ping 192.168.25.1
-Web Server ↔ Gateway Router: ping 192.168.125.1
-Cross-Subnet Communication: ping 192.168.125.10 from Ubuntu Desktop.
+Verified connectivity between devices within each subnet and with the gateway router using ping commands.
+Example: ping 192.168.25.1 (from Ubuntu Desktop to gateway router).
+Cross-Subnet Communication:
+Confirmed communication between Subnet 01 and Subnet 02 using ping commands (e.g., pinging the web server IP from the Ubuntu Desktop).
 Web Server Access:
-
-Accessed the web application from Ubuntu Desktop using:
-arduino
-Copy code
-http://192.168.125.10
+Accessed the web application from the Ubuntu Desktop using the web server's IP address in a web browser (e.g., http://192.168.125.10).
 5.2. Functional Tests
-Verified internet access for all devices via the Gateway Router.
-Used nslookup on the Web Server to resolve domain names:
-bash
-Copy code
-nslookup bbc.co.uk
-Challenges:
-Latency: Resolved by optimizing VirtualBox network adapter settings.
-Firewall Conflicts: Resolved by adjusting ufw rules:
-bash
-Copy code
-sudo ufw allow from 192.168.25.0/24 to any
-6. Lessons Learned
-Subnetting Mastery: Gained practical experience in dividing networks into subnets.
-Routing Skills: Configured and troubleshot complex routing scenarios using iptables.
-Troubleshooting: Overcame network delays and adapter conflicts through experimentation.
+Internet Access:
+Verified internet access for all devices on both subnets through the gateway router.
+DNS Resolution:
+Used nslookup on the web server to confirm successful domain name resolution (e.g., nslookup bbc.co.uk).
+5.2.1. Challenges
+Latency:
+Encountered latency issues, which were resolved by optimizing the VirtualBox network adapter settings.
+Firewall Conflicts:
+Adjusted firewall rules (e.g., using ufw commands) to address conflicts and allow necessary traffic.
+Lessons Learned
+Subnetting: Gained practical experience in configuring subnets for network segmentation.
+Routing: Enhanced skills in configuring and troubleshooting routing between subnets using tools like iptables.
+Troubleshooting: Developed problem-solving techniques to overcome network delays and adapter configuration issues.
+Conclusion
+This lab successfully configured static IP addresses for two subnets, established communication between them, and ensured internet access for devices. The troubleshooting process provided valuable insights into routing, firewall rules, and network optimization techniques.
