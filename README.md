@@ -1,54 +1,62 @@
-<header>
+# Portfolio 02: Building a Virtual Sandboxed Network
 
-<!--
-  <<< Author notes: Course header >>>
-  Include a 1280×640 image, course title in sentence case, and a concise description in emphasis.
-  In your repository settings: enable template repository, add your 1280×640 social image, auto delete head branches.
-  Add your open source license, GitHub uses MIT license.
--->
-
-# GitHub Pages
-
-_Create a site or blog from your GitHub repositories with GitHub Pages._
-
-</header>
-
-<!--
-  <<< Author notes: Step 1 >>>
-  Choose 3-5 steps for your course.
-  The first step is always the hardest, so pick something easy!
-  Link to docs.github.com for further explanations.
-  Encourage users to open new tabs for steps!
--->
-
-## Step 1: Enable GitHub Pages
-
-_Welcome to GitHub Pages and Jekyll :tada:!_
-
-The first step is to enable GitHub Pages on this [repository](https://docs.github.com/en/get-started/quickstart/github-glossary#repository). When you enable GitHub Pages on a repository, GitHub takes the content that's on the main branch and publishes a website based on its contents.
-
-### :keyboard: Activity: Enable GitHub Pages
-
-1. Open a new browser tab, and work on the steps in your second tab while you read the instructions in this tab.
-1. Under your repository name, click **Settings**.
-1. Click **Pages** in the **Code and automation** section.
-1. Ensure "Deploy from a branch" is selected from the **Source** drop-down menu, and then select `main` from the **Branch** drop-down menu.
-1. Click the **Save** button.
-1. Wait about _one minute_ then refresh this page (the one you're following instructions from). [GitHub Actions](https://docs.github.com/en/actions) will automatically update to the next step.
-   > Turning on GitHub Pages creates a deployment of your repository. GitHub Actions may take up to a minute to respond while waiting for the deployment. Future steps will be about 20 seconds; this step is slower.
-   > **Note**: In the **Pages** of **Settings**, the **Visit site** button will appear at the top. Click the button to see your GitHub Pages site.
-
-<footer>
-
-<!--
-  <<< Author notes: Footer >>>
-  Add a link to get support, GitHub status page, code of conduct, license link.
--->
+This repository documents the process, configurations, and outcomes of the **Portfolio 02: Building a Virtual Sandboxed Network** project. Below, you will find a detailed explanation of each stage, along with challenges encountered and solutions implemented.
 
 ---
 
-Get help: [Post in our discussion board](https://github.com/orgs/skills/discussions/categories/github-pages) &bull; [Review the GitHub status page](https://www.githubstatus.com/)
+## 1. Overview of the Network Design
+This project involves creating a sandboxed virtual network with three key components:
 
-&copy; 2023 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
+- **Ubuntu Desktop (Subnet 01)**: Used as a management interface to configure other network components.
+- **Gateway Router**: Serves as the primary router for the network, connecting Subnet 01, Subnet 02, and the internet.
+- **Web Server (Subnet 02)**: Hosts applications and services for testing network functionality.
 
-</footer>
+The primary objective is to simulate a real-world network environment using **VirtualBox**, IP subnetting, and open-source software. The sandboxed network ensures a safe space to experiment with networking concepts and tools.
+
+---
+
+## 2. Network Diagram
+
+![Network Diagram](network-diagram.png)
+
+The network diagram illustrates the topology:
+- **Internet** connects to the **Gateway Router**.
+- **Subnet 01** connects to the **Ubuntu Desktop**.
+- **Subnet 02** connects to the **Web Server**.
+
+### Challenges:
+- **Tool Selection**: Deciding between GNS3 and Packet Tracer for creating a clear, professional-looking diagram.
+- **Subnet Design**: Determining IP ranges and ensuring they don't overlap or conflict.
+
+---
+
+## 3. IP Address Table
+
+| Device               | Role                   | IP Address        | Subnet Mask      |
+|----------------------|------------------------|-------------------|------------------|
+| Ubuntu Desktop       | Management Interface   | 192.168.25.10     | 255.255.255.0    |
+| Gateway Router (LAN) | Subnet 01 Interface    | 192.168.25.1      | 255.255.255.0    |
+| Gateway Router (LAN) | Subnet 02 Interface    | 192.168.125.1     | 255.255.255.0    |
+| Gateway Router (NAT) | Internet Interface     | Dynamic (NAT)     | N/A              |
+| Web Server           | Application Server     | 192.168.125.10    | 255.255.255.0    |
+
+### Challenges:
+- **IP Allocation**: Ensuring unique addresses for each device.
+- **Subnet Masks**: Choosing appropriate masks for segmentation and connectivity.
+
+---
+
+## 4. Configuration Steps
+
+### 4.1. Gateway Router Setup
+1. Created a virtual machine for the **Gateway Router** and installed Ubuntu Server.
+2. Configured **three network adapters** in VirtualBox:
+   - Adapter 1: **NAT** for internet access.
+   - Adapter 2: **Internal Network** for Subnet 01.
+   - Adapter 3: **Internal Network** for Subnet 02.
+3. Installed and configured `iptables` for routing:
+   ```bash
+   sudo sysctl -w net.ipv4.ip_forward=1
+   sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -j ACCEPT
+   sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
+   sudo iptables -A POSTROUTING -t nat -j MASQUERADE
