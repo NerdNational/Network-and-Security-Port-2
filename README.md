@@ -41,9 +41,9 @@ The network diagram illustrates the topology:
 | Web Server           | Application Server     | 192.168.125.10    | 255.255.255.0    |
 
 ### Challenges:
-- **IP Allocation**: Ensuring unique addresses for each device.
-- **Subnet Masks**: Choosing appropriate masks for segmentation and connectivity.
-
+Assigning IP addresses and configuring the network interfaces with netplan was straightforward, and I was able to successfully ping the Gateway Router from both subnets without any issues.
+However, I encountered difficulties when attempting to send pings to external networks beyond the Gateway Router. The packets were not being routed correctly.
+After extensive research and troubleshooting, I discovered that I needed to configure proper routing on the Gateway Router using iptables. Setting up NAT and enabling packet forwarding resolved the issue, allowing devices on both subnets to access external networks successfully.
 ---
 
 ## 4. Configuration Steps
@@ -60,3 +60,5 @@ The network diagram illustrates the topology:
    sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -j ACCEPT
    sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
    sudo iptables -A POSTROUTING -t nat -j MASQUERADE
+
+   
